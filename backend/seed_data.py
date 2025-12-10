@@ -15,7 +15,7 @@ from app.core.database import async_session, engine
 from app.models.models import Base, Airport, Aircraft, Pilot, Flight
 
 
-async def seed_database():
+async def seed_database(force: bool = False):
     """Populate the database with sample data."""
     
     # Create all tables first
@@ -24,11 +24,21 @@ async def seed_database():
     
     async with async_session() as db:
         # Check if data already exists
-        from sqlalchemy import select, func
-        result = await db.execute(select(func.count(Pilot.id)))
-        if result.scalar() > 0:
-            print("Database already has data. Skipping seed.")
-            return
+        from sqlalchemy import select, func, delete
+        
+        if force:
+            # Clear existing data
+            print("Force reseed - clearing existing data...")
+            await db.execute(delete(Flight))
+            await db.execute(delete(Pilot))
+            await db.execute(delete(Aircraft))
+            await db.execute(delete(Airport))
+            await db.commit()
+        else:
+            result = await db.execute(select(func.count(Pilot.id)))
+            if result.scalar() > 0:
+                print("Database already has data. Skipping seed. Use force=True to reseed.")
+                return
         
         print("Seeding database with sample data...")
 

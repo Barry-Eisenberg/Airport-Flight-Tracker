@@ -61,8 +61,8 @@ async def health_check():
 
 
 @app.post("/api/v1/seed")
-async def seed_database():
-    """Seed the database with sample data."""
+async def seed_database(force: bool = False):
+    """Seed the database with sample data. Use force=true to clear and reseed."""
     from seed_data import seed_database as run_seed
-    await run_seed()
-    return {"status": "success", "message": "Database seeded with sample data"}
+    await run_seed(force=force)
+    return {"status": "success", "message": "Database seeded with sample data", "force": force}
