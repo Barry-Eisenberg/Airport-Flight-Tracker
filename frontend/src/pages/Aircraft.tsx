@@ -1,7 +1,8 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Plus, Search } from 'lucide-react';
+import { Plus, Search, FileDown } from 'lucide-react';
 import { aircraftApi } from '../services/api';
+import { exportAircraftPDF } from '../utils/pdfExport';
 
 export default function Aircraft() {
   const [search, setSearch] = useState('');
@@ -19,10 +20,20 @@ export default function Aircraft() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold text-white">Aircraft Registry</h1>
-        <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
-          <Plus className="w-5 h-5" />
-          Register Aircraft
-        </button>
+        <div className="flex gap-2">
+          <button 
+            onClick={() => aircraft && exportAircraftPDF(aircraft)}
+            disabled={!aircraft || aircraft.length === 0}
+            className="flex items-center gap-2 bg-slate-600 hover:bg-slate-500 disabled:opacity-50 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg transition-colors"
+          >
+            <FileDown className="w-5 h-5" />
+            Export PDF
+          </button>
+          <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+            <Plus className="w-5 h-5" />
+            Register Aircraft
+          </button>
+        </div>
       </div>
 
       {/* Filters */}

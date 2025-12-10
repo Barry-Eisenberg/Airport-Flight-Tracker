@@ -1,9 +1,11 @@
 import { useQuery } from '@tanstack/react-query';
-import { Plane, Users, ClipboardList, TrendingUp } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
+import { Plane, Users, ClipboardList, TrendingUp, MapPin } from 'lucide-react';
 import { dashboardApi } from '../services/api';
 import { format } from 'date-fns';
 
 export default function Dashboard() {
+  const navigate = useNavigate();
   const { data: stats, isLoading, error } = useQuery({
     queryKey: ['dashboard'],
     queryFn: dashboardApi.getStats,
@@ -36,24 +38,28 @@ export default function Dashboard() {
           value={stats?.total_flights_today || 0}
           icon={<ClipboardList className="w-8 h-8" />}
           color="blue"
+          onClick={() => navigate('/flights')}
         />
         <StatCard
           title="Flights This Week"
           value={stats?.total_flights_week || 0}
           icon={<TrendingUp className="w-8 h-8" />}
           color="green"
+          onClick={() => navigate('/flights')}
         />
         <StatCard
           title="Registered Aircraft"
           value={stats?.total_aircraft || 0}
           icon={<Plane className="w-8 h-8" />}
           color="purple"
+          onClick={() => navigate('/aircraft')}
         />
         <StatCard
           title="Active Pilots"
           value={stats?.total_pilots || 0}
           icon={<Users className="w-8 h-8" />}
           color="orange"
+          onClick={() => navigate('/pilots')}
         />
       </div>
 
@@ -124,9 +130,10 @@ interface StatCardProps {
   value: number;
   icon: React.ReactNode;
   color: 'blue' | 'green' | 'purple' | 'orange';
+  onClick?: () => void;
 }
 
-function StatCard({ title, value, icon, color }: StatCardProps) {
+function StatCard({ title, value, icon, color, onClick }: StatCardProps) {
   const colorClasses = {
     blue: 'bg-blue-500/20 text-blue-400',
     green: 'bg-green-500/20 text-green-400',
@@ -135,7 +142,10 @@ function StatCard({ title, value, icon, color }: StatCardProps) {
   };
 
   return (
-    <div className="bg-slate-800 rounded-lg p-6">
+    <div 
+      className={`bg-slate-800 rounded-lg p-6 ${onClick ? 'cursor-pointer hover:bg-slate-700 transition-colors' : ''}`}
+      onClick={onClick}
+    >
       <div className="flex items-center justify-between">
         <div>
           <p className="text-slate-400 text-sm">{title}</p>

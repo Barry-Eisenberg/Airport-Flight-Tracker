@@ -1,11 +1,14 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Plus, Search } from 'lucide-react';
+import { Plus, Search, FileDown, Map, List } from 'lucide-react';
 import { airportApi } from '../services/api';
+import { exportAirportsPDF } from '../utils/pdfExport';
+import AirportMap from '../components/AirportMap';
 
 export default function Airports() {
   const [search, setSearch] = useState('');
   const [state, setState] = useState('');
+  const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
 
   const { data: airports, isLoading } = useQuery({
     queryKey: ['airports', { search, state }],
@@ -16,83 +19,121 @@ export default function Airports() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold text-white">Airports</h1>
-        <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
-          <Plus className="w-5 h-5" />
-          Add Airport
-        </button>
-      </div>
-
-      {/* Filters */}
-      <div className="flex gap-4 mb-6">
-        <div className="relative flex-1">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
-          <input
-            type="text"
-            placeholder="Search airports..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-10 pr-4 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-blue-500"
-          />
+        <div className="flex gap-2">
+          {/* View Toggle */}
+          <div className="flex bg-slate-700 rounded-lg p-1">
+            <button
+              onClick={() => setViewMode('list')}
+              className={`flex items-center gap-1 px-3 py-1.5 rounded-md transition-colors ${
+                viewMode === 'list' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <List className="w-4 h-4" />
+              List
+            </button>
+            <button
+              onClick={() => setViewMode('map')}
+              className={`flex items-center gap-1 px-3 py-1.5 rounded-md transition-colors ${
+                viewMode === 'map' ? 'bg-blue-600 text-white' : 'text-slate-400 hover:text-white'
+              }`}
+            >
+              <Map className="w-4 h-4" />
+              Map
+            </button>
+          </div>
+          <button 
+            onClick={() => airports && exportAirportsPDF(airports)}
+            disabled={!airports || airports.length === 0}
+            className="flex items-center gap-2 bg-slate-600 hover:bg-slate-500 disabled:opacity-50 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg transition-colors"
+          >
+            <FileDown className="w-5 h-5" />
+            Export PDF
+          </button>
+          <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+            <Plus className="w-5 h-5" />
+            Add Airport
+          </button>
         </div>
-        <select
-          value={state}
-          onChange={(e) => setState(e.target.value)}
-          className="px-4 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
-        >
-          <option value="">All States</option>
-          {US_STATES.map((s) => (
-            <option key={s} value={s}>{s}</option>
-          ))}
-        </select>
       </div>
 
-      {/* Table */}
-      <div className="bg-slate-800 rounded-lg overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-slate-700">
-            <tr>
-              <th className="text-left p-4 text-slate-300">ICAO</th>
-              <th className="text-left p-4 text-slate-300">Name</th>
-              <th className="text-left p-4 text-slate-300">City</th>
-              <th className="text-left p-4 text-slate-300">State</th>
-              <th className="text-left p-4 text-slate-300">Type</th>
-              <th className="text-left p-4 text-slate-300">Tower</th>
-            </tr>
-          </thead>
-          <tbody>
-            {isLoading ? (
-              <tr>
-                <td colSpan={6} className="p-8 text-center text-slate-400">
-                  Loading...
-                </td>
-              </tr>
-            ) : airports && airports.length > 0 ? (
-              airports.map((airport) => (
-                <tr key={airport.id} className="border-t border-slate-700 hover:bg-slate-700/50">
-                  <td className="p-4 text-blue-400 font-mono">{airport.icao_code}</td>
-                  <td className="p-4 text-white">{airport.name}</td>
-                  <td className="p-4 text-slate-300">{airport.city}</td>
-                  <td className="p-4 text-slate-300">{airport.state}</td>
-                  <td className="p-4 text-slate-300">{airport.airport_type}</td>
-                  <td className="p-4">
-                    {airport.has_tower ? (
-                      <span className="text-green-400">Yes</span>
-                    ) : (
-                      <span className="text-slate-500">No</span>
-                    )}
-                  </td>
+      {viewMode === 'list' ? (
+        <>
+          {/* Filters */}
+          <div className="flex gap-4 mb-6">
+            <div className="relative flex-1">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+              <input
+                type="text"
+                placeholder="Search airports..."
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                className="w-full pl-10 pr-4 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-slate-400 focus:outline-none focus:border-blue-500"
+              />
+            </div>
+            <select
+              value={state}
+              onChange={(e) => setState(e.target.value)}
+              className="px-4 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white focus:outline-none focus:border-blue-500"
+            >
+              <option value="">All States</option>
+              {US_STATES.map((s) => (
+                <option key={s} value={s}>{s}</option>
+              ))}
+            </select>
+          </div>
+
+          {/* Table */}
+          <div className="bg-slate-800 rounded-lg overflow-hidden">
+            <table className="w-full">
+              <thead className="bg-slate-700">
+                <tr>
+                  <th className="text-left p-4 text-slate-300">ICAO</th>
+                  <th className="text-left p-4 text-slate-300">Name</th>
+                  <th className="text-left p-4 text-slate-300">City</th>
+                  <th className="text-left p-4 text-slate-300">State</th>
+                  <th className="text-left p-4 text-slate-300">Type</th>
+                  <th className="text-left p-4 text-slate-300">Tower</th>
                 </tr>
-              ))
-            ) : (
-              <tr>
-                <td colSpan={6} className="p-8 text-center text-slate-400">
-                  No airports found
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
-      </div>
+              </thead>
+              <tbody>
+                {isLoading ? (
+                  <tr>
+                    <td colSpan={6} className="p-8 text-center text-slate-400">
+                      Loading...
+                    </td>
+                  </tr>
+                ) : airports && airports.length > 0 ? (
+                  airports.map((airport) => (
+                    <tr key={airport.id} className="border-t border-slate-700 hover:bg-slate-700/50">
+                      <td className="p-4 text-blue-400 font-mono">{airport.icao_code}</td>
+                      <td className="p-4 text-white">{airport.name}</td>
+                      <td className="p-4 text-slate-300">{airport.city}</td>
+                      <td className="p-4 text-slate-300">{airport.state}</td>
+                      <td className="p-4 text-slate-300">{airport.airport_type}</td>
+                      <td className="p-4">
+                        {airport.has_tower ? (
+                          <span className="text-green-400">Yes</span>
+                        ) : (
+                          <span className="text-slate-500">No</span>
+                        )}
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr>
+                    <td colSpan={6} className="p-8 text-center text-slate-400">
+                      No airports found
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </>
+      ) : (
+        /* Map View */
+        <AirportMap airports={airports || []} />
+      )}
     </div>
   );
 }

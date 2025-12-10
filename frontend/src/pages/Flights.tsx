@@ -1,8 +1,9 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Plus, Search, Plane, Calendar } from 'lucide-react';
+import { Plus, Search, Plane, Calendar, FileDown } from 'lucide-react';
 import { format } from 'date-fns';
 import { flightApi, airportApi } from '../services/api';
+import { exportFlightsPDF } from '../utils/pdfExport';
 
 export default function Flights() {
   const [search, setSearch] = useState('');
@@ -30,10 +31,20 @@ export default function Flights() {
     <div>
       <div className="flex items-center justify-between mb-6">
         <h1 className="text-3xl font-bold text-white">Flight Logs</h1>
-        <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
-          <Plus className="w-5 h-5" />
-          Log Flight
-        </button>
+        <div className="flex gap-2">
+          <button 
+            onClick={() => flights && exportFlightsPDF(flights)}
+            disabled={!flights || flights.length === 0}
+            className="flex items-center gap-2 bg-slate-600 hover:bg-slate-500 disabled:opacity-50 disabled:cursor-not-allowed text-white px-4 py-2 rounded-lg transition-colors"
+          >
+            <FileDown className="w-5 h-5" />
+            Export PDF
+          </button>
+          <button className="flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors">
+            <Plus className="w-5 h-5" />
+            Log Flight
+          </button>
+        </div>
       </div>
 
       {/* Filters */}

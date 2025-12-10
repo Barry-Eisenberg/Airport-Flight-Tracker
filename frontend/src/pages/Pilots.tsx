@@ -1,9 +1,10 @@
 import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { Plus, Search, User, Clock, Plane } from 'lucide-react';
+import { Plus, Search, User, Clock, Plane, FileDown } from 'lucide-react';
 import { format } from 'date-fns';
 import { pilotApi, flightApi } from '../services/api';
 import type { Pilot } from '../types';
+import { exportFlightsPDF } from '../utils/pdfExport';
 
 export default function Pilots() {
   const [pilotSearch, setPilotSearch] = useState('');
@@ -174,9 +175,19 @@ export default function Pilots() {
                 <span className="text-white font-bold text-xl">{pilotFlights?.length || 0}</span>
                 <span className="text-slate-400"> flights in the last {yearsBack} year{parseInt(yearsBack) !== 1 ? 's' : ''}</span>
               </div>
-              {isFetching && (
-                <span className="text-slate-400 text-sm">Loading flight history...</span>
-              )}
+              <div className="flex items-center gap-2">
+                {isFetching && (
+                  <span className="text-slate-400 text-sm">Loading flight history...</span>
+                )}
+                <button 
+                  onClick={() => pilotFlights && exportFlightsPDF(pilotFlights)}
+                  disabled={!pilotFlights || pilotFlights.length === 0}
+                  className="flex items-center gap-2 bg-slate-600 hover:bg-slate-500 disabled:opacity-50 disabled:cursor-not-allowed text-white px-3 py-1.5 rounded-lg transition-colors text-sm"
+                >
+                  <FileDown className="w-4 h-4" />
+                  Export PDF
+                </button>
+              </div>
             </div>
           </div>
 
