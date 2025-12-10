@@ -12,6 +12,10 @@ RUN npm ci
 # Copy source code
 COPY . .
 
+# Set the backend API URL for the build
+ARG VITE_API_URL=https://airport-flight-tracker-production.up.railway.app/api/v1
+ENV VITE_API_URL=$VITE_API_URL
+
 # Build the application
 RUN npm run build
 
