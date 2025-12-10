@@ -58,3 +58,11 @@ app.include_router(dashboard.router, prefix="/api/v1")
 async def health_check():
     """Health check endpoint."""
     return {"status": "healthy", "service": "airport-flight-tracker"}
+
+
+@app.post("/api/v1/seed")
+async def seed_database():
+    """Seed the database with sample data."""
+    from seed_data import seed_database as run_seed
+    await run_seed()
+    return {"status": "success", "message": "Database seeded with sample data"}
