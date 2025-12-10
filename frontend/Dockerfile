@@ -22,14 +22,14 @@ RUN npm run build
 # Production stage with nginx
 FROM nginx:alpine
 
-# Copy custom nginx config
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copy custom nginx config as template
+COPY nginx.conf /etc/nginx/templates/default.conf.template
 
 # Copy built files from builder stage
 COPY --from=builder /app/dist /usr/share/nginx/html
 
-# Expose port
-EXPOSE 80
+# Railway provides PORT env var - nginx will substitute it
+ENV PORT=80
 
-# Start nginx
+# Start nginx (entrypoint handles envsubst on templates)
 CMD ["nginx", "-g", "daemon off;"]
