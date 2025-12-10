@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { Plus, Search } from 'lucide-react';
 import { aircraftApi } from '../services/api';
-import type { AircraftCategory } from '../types';
 
 export default function Aircraft() {
   const [search, setSearch] = useState('');

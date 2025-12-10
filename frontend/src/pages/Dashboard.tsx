@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import { Plane, Building2, Users, ClipboardList, TrendingUp } from 'lucide-react';
+import { Plane, Users, ClipboardList, TrendingUp } from 'lucide-react';
 import { dashboardApi } from '../services/api';
 import { format } from 'date-fns';
 
