@@ -22,8 +22,8 @@ COPY . .
 RUN useradd --create-home appuser && chown -R appuser:appuser /app
 USER appuser
 
-# Expose port
+# Expose port (Railway uses PORT env variable)
 EXPOSE 8000
 
-# Run the application
-CMD ["python", "-m", "uvicorn", "main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Run the application - Railway provides PORT env variable
+CMD python -m uvicorn main:app --host 0.0.0.0 --port ${PORT:-8000}
