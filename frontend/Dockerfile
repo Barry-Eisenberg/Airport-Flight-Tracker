@@ -16,6 +16,10 @@ COPY . .
 ARG VITE_API_URL=https://airport-flight-tracker-production.up.railway.app/api/v1
 ENV VITE_API_URL=$VITE_API_URL
 
+# Set Google Maps API key for the build
+ARG VITE_GOOGLE_MAPS_API_KEY
+ENV VITE_GOOGLE_MAPS_API_KEY=$VITE_GOOGLE_MAPS_API_KEY
+
 # Build the application
 RUN npm run build
 
