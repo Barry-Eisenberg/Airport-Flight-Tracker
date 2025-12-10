@@ -1,6 +1,6 @@
 import { useQuery } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
-import { Plane, Users, ClipboardList, TrendingUp, MapPin } from 'lucide-react';
+import { Plane, Users, ClipboardList, TrendingUp } from 'lucide-react';
 import { dashboardApi } from '../services/api';
 import { format } from 'date-fns';
 
